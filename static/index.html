@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linkly - Shorten Your Loooong Links</title>
+    <style>
+        :root {
+            --bg-dark: #0a0e17;
+            --text-light: #ffffff;
+            --text-gray: #a0a0a0;
+            --accent-blue: #0056b3;
+            --accent-glow: #007bff;
+            --gradient-start: #4facfe;
+            --gradient-end: #00f2fe;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at 50% 50%, rgba(25, 35, 55, 0.8) 0%, rgba(10, 14, 23, 1) 70%);
+            margin: 0;
+            color: var(--text-light);
+        }
+
+        .container {
+            text-align: center;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #4facfe 0%, #a18dce 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: var(--text-gray);
+            margin-bottom: 2.5rem;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        /* Input Group */
+        .input-group {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            margin-bottom: 1.5rem;
+        }
+
+        .input-wrapper {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            padding-left: 20px;
+        }
+
+        .link-icon {
+            color: var(--text-gray);
+            margin-right: 10px;
+        }
+
+        input[type="url"] {
+            flex-grow: 1;
+            border: none;
+            background: transparent;
+            color: var(--text-light);
+            font-size: 16px;
+            padding: 15px 0;
+        }
+
+        input[type="url"]:focus {
+            outline: none;
+        }
+
+        input[type="url"]::placeholder {
+            color: var(--text-gray);
+        }
+
+        .shorten-btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 86, 179, 0.4);
+        }
+
+        .shorten-btn:hover {
+            background: var(--accent-glow);
+            box-shadow: 0 0 20px rgba(0, 123, 255, 0.6);
+        }
+
+        /* Auto Paste Toggle */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-gray);
+            margin-bottom: 2rem;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            margin-right: 10px;
+        }
+
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent-blue);
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--accent-blue);
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        /* Footer Text */
+        .footer-text {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+        
+        .footer-text a {
+            color: var(--accent-glow);
+            text-decoration: none;
+        }
+
+        /* Result Area */
+        #result { margin-top: 1.5rem; display: none; opacity: 0; transition: opacity 0.5s; }
+        .result-box { display: flex; gap: 10px; margin-top: 10px; background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px; }
+        .result-input { flex-grow: 1; padding: 10px; border: none; border-radius: 6px; background: transparent; color: var(--text-light); }
+        .icon-btn { padding: 10px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; transition: transform 0.1s; }
+        .icon-btn:active { transform: scale(0.95); }
+        .copy-btn { background: #28a745; color: white; }
+        .share-btn { background: #6610f2; color: white; }
+        .fade-in { opacity: 1 !important; display: block !important; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Shorten Your Long Links!!</h1>
+        <p class="subtitle">Paste your long URLs here to make it short and easy to use.</p>
+        
+        <div class="input-group">
+            <div class="input-wrapper">
+                <span class="link-icon">🔗</span>
+                <input type="url" id="longUrl" placeholder="Enter the link here" required>
+            </div>
+            <button class="shorten-btn" onclick="shortenUrl()">Shorten!</button>
+        </div>
+
+
+        <p class="footer-text">created by<strong style="color: var(--accent-glow);"> Sanjay.</strong></p>
+
+        <div id="result">
+            <p style="color: var(--text-gray); margin-bottom: 5px;">Your Short Link:</p>
+            <div class="result-box">
+                <input type="text" id="shortOutput" class="result-input" readonly>
+                <button class="icon-btn copy-btn" onclick="copyLink()" title="Copy to Clipboard">Copy</button>
+                <button class="icon-btn share-btn" onclick="shareLink()" title="Share Link">Share</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // (Script remains the same as in the previous response for functionality)
+        // 1. Logic to Call Backend
+        async function shortenUrl() {
+            const longUrl = document.getElementById('longUrl').value;
+            if (!longUrl) return alert("Please enter a URL");
+
+            try {
+                const apiUrl = `/shorten?long_url=${encodeURIComponent(longUrl)}`;
+                const response = await fetch(apiUrl, { method: 'POST' });
+                const data = await response.json();
+
+                if (response.ok) {
+                    showResult(data.short_url);
+                } else {
+                    alert("Error: " + JSON.stringify(data));
+                }
+            } catch (err) {
+                alert("Failed to connect to server.");
+                console.error(err);
+            }
+        }
+
+        // 2. Logic to Show Result
+        function showResult(shortPath) {
+            const fullUrl = window.location.origin + shortPath;
+            document.getElementById('shortOutput').value = fullUrl;
+            document.getElementById('result').classList.add('fade-in');
+        }
+
+        // 3. Logic to Copy
+        function copyLink() {
+            const copyText = document.getElementById("shortOutput");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value).then(() => {
+                alert("Copied to clipboard!");
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+
+        // 4. Logic to Share
+        function shareLink() {
+            const url = document.getElementById("shortOutput").value;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Check out this link!',
+                    text: 'I shortened this link using Flash Shortener:',
+                    url: url,
+                }).then(() => console.log('Successful share')).catch((error) => console.log('Error sharing', error));
+            } else {
+                alert("Sharing is not supported on this browser/device. Try copying instead!");
+            }
+        }
+
+    </script>
+</body>
+</html>
