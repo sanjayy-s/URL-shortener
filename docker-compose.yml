@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # Your Python App
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    environment:
+      - DB_HOST=db
+      - DB_NAME=shortener
+      - DB_USER=postgres
+      - DB_PASS=supersecretpassword
+      - REDIS_HOST=redis
+    volumes:
+      - .:/app  # Live reload for development
+
+  # Postgres Database (Production Grade)
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: supersecretpassword
+      POSTGRES_DB: shortener
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Redis Cache
+  redis:
+    image: redis:alpine
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
